@@ -4,43 +4,43 @@ queue()
     .await(makeGraphs);
 
 function makeGraphs(error, projectsJson, statesJson) {
-	
+
 	//Clean projectsJson data
 	var donorschooseProjects = projectsJson;
-	var dateFormat = d3.time.format("%Y-%m-%d");
+	var dateFormat = d3.time.format("%Y-%m-%d %H:%M:%S");
 	donorschooseProjects.forEach(function(d) {
-		d["date_posted"] = dateFormat.parse(d["date_posted"]);
-		d["date_posted"].setDate(1);
-		d["total_donations"] = +d["total_donations"];
+		d[" date_posted"] = dateFormat.parse(d[" date_posted"]);
+		d[" date_posted"].setDate(1);
+		d[" total_donations"] = +d[" total_donations"];
 	});
 
 	//Create a Crossfilter instance
 	var ndx = crossfilter(donorschooseProjects);
 
 	//Define Dimensions
-	var dateDim = ndx.dimension(function(d) { return d["date_posted"]; });
-	var resourceTypeDim = ndx.dimension(function(d) { return d["resource_type"]; });
-	var povertyLevelDim = ndx.dimension(function(d) { return d["poverty_level"]; });
-	var stateDim = ndx.dimension(function(d) { return d["school_state"]; });
-	var totalDonationsDim  = ndx.dimension(function(d) { return d["total_donations"]; });
+	var dateDim = ndx.dimension(function(d) { return d[" date_posted"]; });
+	var resourceTypeDim = ndx.dimension(function(d) { return d[" resource_type"]; });
+	var povertyLevelDim = ndx.dimension(function(d) { return d[" poverty_level"]; });
+	var stateDim = ndx.dimension(function(d) { return d[" school_state"]; });
+	var totalDonationsDim  = ndx.dimension(function(d) { return d[" total_donations"]; });
 
 
 	//Calculate metrics
-	var numProjectsByDate = dateDim.group(); 
+	var numProjectsByDate = dateDim.group();
 	var numProjectsByResourceType = resourceTypeDim.group();
 	var numProjectsByPovertyLevel = povertyLevelDim.group();
 	var totalDonationsByState = stateDim.group().reduceSum(function(d) {
-		return d["total_donations"];
+		return d[" total_donations"];
 	});
 
 	var all = ndx.groupAll();
-	var totalDonations = ndx.groupAll().reduceSum(function(d) {return d["total_donations"];});
+	var totalDonations = ndx.groupAll().reduceSum(function(d) {return d[" total_donations"];});
 
 	var max_state = totalDonationsByState.top(1)[0].value;
 
 	//Define values (to be used in charts)
-	var minDate = dateDim.bottom(1)[0]["date_posted"];
-	var maxDate = dateDim.top(1)[0]["date_posted"];
+	var minDate = dateDim.bottom(1)[0][" date_posted"];
+	var maxDate = dateDim.top(1)[0][" date_posted"];
 
     //Charts
 	var timeChart = dc.barChart("#time-chart");
